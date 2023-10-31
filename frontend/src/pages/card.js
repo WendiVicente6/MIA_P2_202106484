@@ -7,8 +7,8 @@ function Card() {
     const [isPaused, setIsPaused] = useState(false);
     const [commands_list, setCommands_list] = useState([]);
     const textAreaRef = useRef(null);
-    const apiUrl ='http://localhost:5000'
-    //const apiUrl = process.env.REACT_APP_API_URL;
+    //const apiUrl ='http://localhost:5000'
+    const apiUrl = process.env.REACT_APP_API_URL;
 
   
     const handleFileChange = (e) => {
