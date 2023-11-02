@@ -8,36 +8,41 @@ from Objects.Folderblock import *
 from Objects.Fileblock import *
 from prettytable import PrettyTable
 import argparse
+from Load.Load import *
+from Global.Global import mounted_partitions
 
 def rep(parametros): 
     crr_mbr = MBR()
     parser = argparse.ArgumentParser(description="Parámetros")
-    parser.add_argument("-name", type=int, required=True)
+    parser.add_argument("-name", required=True)
     parser.add_argument("-path", required=True)
-    parser.add_argument("-id", default='f')
+    parser.add_argument("-id", required=True)
     parser.add_argument("-ruta")
     args = parser.parse_args(parametros)
-
+    
     global codigo_para_graphviz 
     global current_id
     name = args.name
-    id = parametros.id.replace(' ', '')
+    id = args.id
+    
     print(f"'{id}'")
     if id == None:
         print("Error: La id es necesaria.")
         return
     partition = None
-    for partition_dict in crr_mbr.partitions:
+    for partition_dict in mounted_partitions:
         if id in partition_dict:
-            partition = partition_dict[id]
+            partition = partition_dict
+            print(partition)
             break
     if not partition:
         print(f"Error: La particion en el id: {id} no existe.")
         return
     # Retrieve partition details.
-    path = partition['path']
-    inicio = partition['inicio']
-    size = partition['size']
+    path = partition[2]
+    
+    inicio = partition[1].start
+    size = partition[1].size
     full_path = path
     if not os.path.exists(full_path):
         print(f"Error: El archivo en la ruta: {full_path} no existe.")
@@ -73,29 +78,37 @@ def rep(parametros):
         elif name == 'disk':
             rows = []
             file.seek(0)
-            mbr = MBR.unpack(file.read(MBR.SIZE))
+            mb = len(MBR().doSerialize())
+            mbr=MBR()
             rows.append('\n<TD>MBR</TD>')
-            partitions = mbr.partitions
-            for partition in partitions:
-                print(str(partition))
-                if partition.type == 'P' and partition.status == 1:
-                    rows.append(f'\n<TD>primaria: {partition.name}</TD>')
-                elif partition.type == 'E' and partition.status == 1:
-                    extended_rows = []
-                    next = partition.byte_inicio
-                    while next != -1:
-                        file.seek(next)
-                        ebr = EBR.unpack(file.read(EBR.part_size))
-                        extended_rows.append(f'\n   <TD>ebr: {ebr.part_name}</TD>')
-                        if ebr.next != -1:
-                            extended_rows.append(f'\n   <TD>logica: {ebr.part_name}</TD>')
-                        if ebr.next != -1 and ebr.part_next < (next + EBR.SIZE+ebr.actual_size):
-                            extended_rows.append(f'\n   <TD>LIBRE</TD>')
-                        next = ebr.part_next
-                    extended_content = "".join(extended_rows)
-                    rows.append(f'\n<TD><TABLE BORDER="2"><TR><TD colspan="10">extendida</TD></TR><TR>{extended_content}</TR></TABLE></TD>')
-                elif partition.status == 0:
-                    rows.append(f'\n<TD>LIBRE</TD>')
+
+            for partition_dict in mounted_partitions:
+                if id in partition_dict:
+                    type=partition_dict[1].type.decode('UTF-8')
+                    status=partition_dict[1].status.decode('UTF-8')
+                    name=partition_dict[1].name.decode('UTF-8')
+                    size=partition_dict[1].size.decode('UTF-8')
+                    if type == 'p' and str(status) == '1':
+                        print("CONDI 1")
+                        rows.append(f'\n<TD>primaria: {name}</TD>')
+                    elif type == 'E' and status == 1:
+                        print("CONDI 2")
+                        extended_rows = []
+                        next = size
+                        while next != -1:
+                            file.seek(next)
+                            ebr = EBR.unpack(file.read(EBR.part_size))
+                            extended_rows.append(f'\n   <TD>ebr: {ebr.part_name}</TD>')
+                            if ebr.next != -1:
+                                extended_rows.append(f'\n   <TD>logica: {ebr.part_name}</TD>')
+                            if ebr.next != -1 and ebr.part_next < (next + EBR.SIZE+ebr.actual_size):
+                                extended_rows.append(f'\n   <TD>LIBRE</TD>')
+                            next = ebr.part_next
+                        extended_content = "".join(extended_rows)
+                        rows.append(f'\n<TD><TABLE BORDER="2"><TR><TD colspan="10">extendida</TD></TR><TR>{extended_content}</TR></TABLE></TD>')
+                    elif status == 0:
+                        rows.append(f'\n<TD>LIBRE</TD>')
+                        print("HOLA")
             graphviz_code = f'''digraph G {{
                 node [shape=none];
                 disk [label=<
@@ -173,11 +186,11 @@ def rep(parametros):
                     inicio = superblock.s_block_start + i*64
                     file.seek(inicio)
                     try:
-                        object = FolderBlock.unpack(file.read(FolderBlock.SIZE))
+                        object = Folderblock.unpack(file.read(Folderblock.size))
                     except:
                         pass
                     try:
-                        object = FileBlock.unpack(file.read(FileBlock.SIZE))
+                        object = Fileblock.unpack(file.read(Fileblock.SIZE))
                     except:
                         pass
                     object_type, pt, lista,index = imprimir(object,inicio)

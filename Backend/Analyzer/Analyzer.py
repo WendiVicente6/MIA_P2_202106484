@@ -54,7 +54,7 @@ def AnalyzeType(entry):
          return fn_login(split_args)
          print(" ------ Termino login ------ ")
       elif(command=="rep"):
-         print( print(" ------ Se dectecto rep ------ "))
+         print( " ------ Se dectecto rep ------ ")
          return rep(split_args)
    except Exception as e: pass
 def fn_rmdisk(split_args):

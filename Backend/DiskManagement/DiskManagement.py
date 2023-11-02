@@ -34,7 +34,7 @@ def mount(args):
       printError("La particion no existe")
       return "La particion no existe"
    Crrfile.close()
-   return "Particion en "+args.paht+" montada exitosamente" + " id: " + str(id)
+   return "Particion en "+args.path+" montada exitosamente" + " id: " + str(id)
 
 def fdisk(args):
    print(" --- Ejecutando fdisk --- ")
