@@ -26,7 +26,7 @@ def mount(args):
          if data[1] == args.path:
             index = int(data[0][2:3]) + 1
 
-      id = "19" + str(index) + nombre_archivo
+      id = "84" + str(index) + nombre_archivo
       print("id:",id)
       temp = [id,crr_partition ,args.path]
       mounted_partitions.append(temp)
@@ -74,14 +74,14 @@ def mkdisk(args):
 
    size_bytes = get_sizeB(args.size,args.unit)
 
-   #folder_path = os.path.dirname(args.path)
-   #subprocess.run(f"mkdir -p {folder_path}", shell=True)
+   folder_path = os.path.dirname(args.path)
+   subprocess.run(f"mkdir -p {folder_path}", shell=True)
 
    if (Fcreate_file(args.path)): return
 
-   Crrfile = open(args.path, "rb+")
+   Crrfile = open(args.path, "wb+")
 
-   #Winit_size(Crrfile,size_bytes)
+   Winit_size(Crrfile,size_bytes)
 
    NewMBR = MBR()
    NewMBR.set_infomation(size_bytes,args.fit)

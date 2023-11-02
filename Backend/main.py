@@ -1,11 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import time
 from readData import readData
-from Analyzer.Analyzer import Commands
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route('/execute', methods=['POST'])
 def execute():
@@ -25,4 +24,4 @@ def execute():
     return jsonify( respuesta)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+   app.run(debug=True)

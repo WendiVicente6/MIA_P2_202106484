@@ -8,7 +8,7 @@ function Card() {
     const [commands_list, setCommands_list] = useState([]);
     const textAreaRef = useRef(null);
     //const apiUrl ='http://localhost:5000'
-    const apiUrl ='http://3.16.11.255'
+    const apiUrl ='http://18.216.193.118'
 
   
     const handleFileChange = (e) => {

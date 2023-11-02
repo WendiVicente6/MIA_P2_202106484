@@ -32,7 +32,10 @@ def AnalyzeType(entry):
       if(command == "mkdisk"):
          print(" ------ Se dectecto mkdisk ------ ")
          return fn_mkdisk(split_args)
-         print(" ------ Termino mkdisk ------ ")
+      elif(command == "rmdisk"):
+         print(" ------ Se dectecto rmdisk ------ ")
+         return fn_rmdisk(split_args)
+         print(" ------ Termino rmdisk ------ ")
       elif(command == "fdisk"):
          print(" ------ Se dectecto fdisk ------ ")
          return fn_fdisk(split_args)
@@ -50,7 +53,28 @@ def AnalyzeType(entry):
          return fn_login(split_args)
          print(" ------ Termino login ------ ")
    except Exception as e: pass
-
+def fn_rmdisk(split_args):
+        try:
+            parser = argparse.ArgumentParser(description="Parámetros")
+            parser.add_argument("-path", required=True)
+            args = parser.parse_args(split_args)
+            def confirmar(mensaje):
+                respuesta = input(f"{mensaje} (y/n)\n\t").lower()
+                return respuesta == "y"
+            if os.path.isfile(args.path):
+                if not args.path.endswith(".dsk"):
+                    print("\tERROR: Extensión de archivo no válida para la eliminación del Disco.") 
+                if  confirmar("Desea eliminar el archivo: "+args.path+"?"):
+                    os.remove(args.path)
+                    return("\t>>>> RMDISK: Disco eliminado exitosamente <<<<") 
+                else:
+                    print("\t>>>> RMDISK: Eliminación del disco cancelada correctamente <<<<") 
+            else:
+                print("\tERROR: El disco no existe en la ruta indicada.") 
+            
+        except SystemExit: print("Análisis de argumentos")
+        except Exception as e: print(str(e))
+        
 def fn_login(split_args):
    try:
       parser = argparse.ArgumentParser(description="Parámetros")
