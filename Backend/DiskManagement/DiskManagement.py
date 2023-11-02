@@ -34,7 +34,7 @@ def mount(args):
       printError("La particion no existe")
       return "La particion no existe"
    Crrfile.close()
-   return "Particion montada exitosamente" + " id: " + str(id)
+   return "Particion en "+args.paht+" montada exitosamente" + " id: " + str(id)
 
 def fdisk(args):
    print(" --- Ejecutando fdisk --- ")
@@ -62,8 +62,10 @@ def fdisk(args):
       crr_mbr.partitions[index] = new_partition
       Fwrite_displacement(Crrfile,0,crr_mbr)
       Crrfile.close()
-      return "Particion creada exitosamente"
- 
+      return "Particion en "+args.path+" creada exitosamente"
+
+
+
 def mkdisk(args):
    print(" --- Ejecutando mkdisk --- ")
    print("args: ", args)
@@ -87,7 +89,7 @@ def mkdisk(args):
    NewMBR.set_infomation(size_bytes,args.fit)
    Fwrite_displacement(Crrfile,0,NewMBR)
    Crrfile.close()
-   return "Disco creado exitosamente"
+   return "Disco creado exitosamente"+" "+args.path
    
 
    

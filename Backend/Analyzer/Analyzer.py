@@ -6,6 +6,7 @@ from Utilities.Utilities import printConsole,printError
 from DiskManagement.DiskManagement import *
 from FileSystem.FileSystem import *
 from User.User import *
+from Rep.rep import *
 
 def Commands(data):
    print(data)
@@ -52,6 +53,9 @@ def AnalyzeType(entry):
          print(" ------ Se dectecto login ------ ")
          return fn_login(split_args)
          print(" ------ Termino login ------ ")
+      elif(command=="rep"):
+         print( print(" ------ Se dectecto rep ------ "))
+         return rep(split_args)
    except Exception as e: pass
 def fn_rmdisk(split_args):
         try:
@@ -63,14 +67,13 @@ def fn_rmdisk(split_args):
                 return respuesta == "y"
             if os.path.isfile(args.path):
                 if not args.path.endswith(".dsk"):
-                    print("\tERROR: Extensión de archivo no válida para la eliminación del Disco.") 
-                if  confirmar("Desea eliminar el archivo: "+args.path+"?"):
-                    os.remove(args.path)
-                    return("\t>>>> RMDISK: Disco eliminado exitosamente <<<<") 
+                    return("\tERROR: Extensión de archivo no válida para la eliminación del Disco.") 
                 else:
-                    print("\t>>>> RMDISK: Eliminación del disco cancelada correctamente <<<<") 
+                    os.remove(args.path)
+                    return("Disco "+args.path+" eliminado exitosamente ") 
+                 
             else:
-                print("\tERROR: El disco no existe en la ruta indicada.") 
+                return("ERROR: El disco "+args.path+"  no existe en la ruta indicada.") 
             
         except SystemExit: print("Análisis de argumentos")
         except Exception as e: print(str(e))
